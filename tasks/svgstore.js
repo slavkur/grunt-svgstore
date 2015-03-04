@@ -85,17 +85,13 @@ module.exports = function (grunt) {
       cleanupAttributes = options.cleanup;
     }
 
+    var j = 0;
     this.files.forEach(function (file) {
       var $resultDocument = cheerio.load('<svg><defs></defs></svg>', { xmlMode: true }),
           $resultSvg = $resultDocument('svg'),
           $resultDefs = $resultDocument('defs').first(),
           iconNameViewBoxArray = [];  // Used to store information of all icons that are added
                                       // { name : '' }
-
-      // Merge in SVG attributes from option
-      for (var attr in options.svg) {
-        $resultSvg.attr(attr, options.svg[attr]);
-      }
 
       file.src.filter(function (filepath) {
         if (!grunt.file.exists(filepath)) {
@@ -128,7 +124,7 @@ module.exports = function (grunt) {
           return id + "-" + oldId;
         }
 
-        $('[id]').each(function () {
+        $('[id]').each(function (smth, index) {
           var $elem = $(this);
           var id = $elem.attr('id');
           var uid = getUniqueId(id);
@@ -240,7 +236,11 @@ module.exports = function (grunt) {
 
         // Merge in symbol attributes from option
         for (var attr in options.symbol) {
-          $symbol.attr(attr, options.symbol[attr]);
+          if(attr === "attrRewrite") {
+            options.symbol[attr]($symbol, j);
+          } else {
+            $symbol.attr(attr, options.symbol[attr]);
+          }
         }
 
         // Add title and desc (if provided)
@@ -271,6 +271,7 @@ module.exports = function (grunt) {
         // Add ID to symbol
         var graphicId = options.prefix + id;
         $symbol.attr('id', graphicId);
+        j++;
 
         // Extract gradients and pattern
         var addToDefs = function(){
@@ -342,6 +343,15 @@ module.exports = function (grunt) {
           }
         }
       });
+
+      // Merge in SVG attributes from option
+      for (var attr in options.svg) {
+        if(attr === "attrRewrite") {
+          $resultSvg.attr(attr, options.svg[attr]($resultSvg, j));
+        } else {
+          $resultSvg.attr(attr, options.svg[attr]);
+        }
+      }
 
       if(options.externalDefs) {
         var filepath = options.externalDefs;
