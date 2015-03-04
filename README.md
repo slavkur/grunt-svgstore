@@ -1,4 +1,4 @@
-# grunt-svgstore [![NPM version](https://badge.fury.io/js/grunt-svgstore-0.5.1.svg)](http://badge.fury.io/js/grunt-svgstore)
+# grunt-svgstore [![NPM version](https://badge.fury.io/js/grunt-svgstore-0.5.1.svg)](http://badge.fury.io/js/grunt-svgstore-0.5.1)
 
 > Merge SVGs from a folder.
 
